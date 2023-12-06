@@ -30,7 +30,7 @@ public class DungeonGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
 
@@ -40,10 +40,15 @@ public class DungeonGenerator : MonoBehaviour
         {
             for (int j = 0; j < size.y; j++)
             {
-                var newRoom = Instantiate(room, new Vector3(i * offset.x, 0, -j * offset.y), Quaternion.identity, transform).GetComponent<RoomBehavior>();
-                newRoom.UpdateRoom(board[(int)(i + j * size.x)].status);
+                Cell currentCell = board[Mathf.FloorToInt(i + j * size.x)];
+                if (currentCell.visited)
+                {
+                    var newRoom = Instantiate(room, new Vector3(i * offset.x, 0, j * offset.y), Quaternion.identity, transform).GetComponent<RoomBehavior>();
+                    newRoom.UpdateRoom(board[(int)(i + j * size.x)].status);
 
-                newRoom.name += " " + i + "-" + j;
+                    newRoom.name += " " + i + "-" + j;
+                }
+
             }
         }
     }
@@ -55,9 +60,9 @@ public class DungeonGenerator : MonoBehaviour
     {
         board = new List<Cell>();
 
-        for(int i = 0; i < size.x; i++)
+        for (int i = 0; i < size.x; i++)
         {
-            for(int j = 0; j < size.y; j++)
+            for (int j = 0; j < size.y; j++)
             {
                 board.Add(new Cell());
             }
@@ -69,7 +74,7 @@ public class DungeonGenerator : MonoBehaviour
 
         int loop = 0;
 
-        while (loop < 1000)
+        while (currentCell != board.Count - 1)
         {
             loop++;
             board[currentCell].visited = true;
@@ -95,7 +100,7 @@ public class DungeonGenerator : MonoBehaviour
 
                 if (newCell > currentCell)
                 {
-                    //down or right
+                    //up or right
                     if (newCell - 1 == currentCell)
                     {
                         board[currentCell].status[2] = true;
@@ -104,14 +109,14 @@ public class DungeonGenerator : MonoBehaviour
                     }
                     else
                     {
-                        board[currentCell].status[1] = true;
-                        currentCell = newCell;
                         board[currentCell].status[0] = true;
+                        currentCell = newCell;
+                        board[currentCell].status[1] = true;
                     }
                 }
                 else
                 {
-                    //up or left
+                    //down or left
                     if (newCell + 1 == currentCell)
                     {
                         board[currentCell].status[3] = true;
@@ -120,9 +125,9 @@ public class DungeonGenerator : MonoBehaviour
                     }
                     else
                     {
-                        board[currentCell].status[0] = true;
-                        currentCell = newCell;
                         board[currentCell].status[1] = true;
+                        currentCell = newCell;
+                        board[currentCell].status[0] = true;
                     }
                 }
             }
@@ -136,26 +141,26 @@ public class DungeonGenerator : MonoBehaviour
         List<int> neighbors = new List<int>();
 
         //check up neighbor
-        if(cell + size.x < board.Count && !board[(int)(cell + size.x)].visited)
+        if (Mathf.FloorToInt(cell + size.x) < (board.Count - 1) && !board[Mathf.FloorToInt(cell + size.x)].visited)
         {
-            neighbors.Add((int)(cell + size.x));
+            neighbors.Add(Mathf.FloorToInt(cell + size.x));
         }
 
 
         //check down neighbor
-        if(cell - size.x >= 0 && !board[(int)(cell - size.x)].visited)
+        if (Mathf.FloorToInt(cell - size.x) >= 0 && !board[Mathf.FloorToInt(cell - size.x)].visited)
         {
-            neighbors.Add((int)(cell - size.x));
+            neighbors.Add(Mathf.FloorToInt(cell - size.x));
         }
 
         //check right neighbor
-        if((cell + 1) % size.x != 0 && !board[(int)(cell + 1)].visited)
+        if ((cell + 1) % size.x != 0 && !board[cell + 1].visited)
         {
             neighbors.Add(cell + 1);
         }
 
         //check left neighbor
-        if(cell % size.x != 0 && !board[(int)(cell - 1)].visited)
+        if (cell % size.x != 0 && !board[cell - 1].visited)
         {
             neighbors.Add(cell - 1);
         }
