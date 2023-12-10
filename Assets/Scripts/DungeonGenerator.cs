@@ -10,6 +10,7 @@ public class DungeonGenerator : MonoBehaviour
     {
         public bool visited = false;
         public bool[] status = new bool[4];
+        public bool[] putDoor = new bool[4];
     }
 
 
@@ -44,7 +45,7 @@ public class DungeonGenerator : MonoBehaviour
                 if (currentCell.visited)
                 {
                     var newRoom = Instantiate(room, new Vector3(i * offset.x, 0, j * offset.y), Quaternion.identity, transform).GetComponent<RoomBehavior>();
-                    newRoom.UpdateRoom(board[(int)(i + j * size.x)].status);
+                    newRoom.UpdateRoom(board[(int)(i + j * size.x)].status, board[(int)(i + j * size.x)].putDoor);
 
                     newRoom.name += " " + i + "-" + j;
                 }
@@ -74,7 +75,7 @@ public class DungeonGenerator : MonoBehaviour
 
         int loop = 0;
 
-        while (currentCell != board.Count - 1)
+        while (loop<1000) //currentCell != board.Count - 1
         {
             loop++;
             board[currentCell].visited = true;
@@ -104,12 +105,14 @@ public class DungeonGenerator : MonoBehaviour
                     if (newCell - 1 == currentCell)
                     {
                         board[currentCell].status[2] = true;
+                        board[currentCell].putDoor[2] = true;
                         currentCell = newCell;
                         board[currentCell].status[3] = true;
                     }
                     else
                     {
                         board[currentCell].status[0] = true;
+                        board[currentCell].putDoor[0] = true;
                         currentCell = newCell;
                         board[currentCell].status[1] = true;
                     }
@@ -120,12 +123,14 @@ public class DungeonGenerator : MonoBehaviour
                     if (newCell + 1 == currentCell)
                     {
                         board[currentCell].status[3] = true;
+                        board[currentCell].putDoor[3] = true;
                         currentCell = newCell;
                         board[currentCell].status[2] = true;
                     }
                     else
                     {
                         board[currentCell].status[1] = true;
+                        board[currentCell].putDoor[1] = true;
                         currentCell = newCell;
                         board[currentCell].status[0] = true;
                     }
