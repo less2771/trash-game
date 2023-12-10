@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class RoomBehavior : MonoBehaviour
 {
 
@@ -9,11 +10,18 @@ public class RoomBehavior : MonoBehaviour
     public GameObject[] doors;
     public GameObject door;
 
-    public float thresholdDistance = 12f;
-
 	// Update is called once per frame
 	public void UpdateRoom(bool[] doorstatus, bool[] putDoor)
     {
+
+
+
+        for (int i = 0; i < doorstatus.Length; i++)
+        {
+            doors[i].SetActive(false);
+            walls[i].SetActive(false);
+        }
+
         for (int i = 0; i < doorstatus.Length; i++)
         {
             doors[i].SetActive(doorstatus[i]);
@@ -22,8 +30,18 @@ public class RoomBehavior : MonoBehaviour
             // Check if a door needs to be instantiated and if there isn't one too close by
             if (doorstatus[i] && putDoor[i])
             {
-                Instantiate(door, doors[i].transform.position, doors[i].transform.rotation);
+               Instantiate(door, doors[i].transform.position, doors[i].transform.rotation);
             }
+        }
+    }
+
+
+    public void DeleteDoor()
+    {
+        for (int i = 0; i < 4 ; i++)
+        {
+            doors[i].SetActive(false);
+            walls[i].SetActive(false);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.AI.Navigation;
 
 public class DungeonGenerator : MonoBehaviour
 {
@@ -37,6 +38,33 @@ public class DungeonGenerator : MonoBehaviour
 
     void GenerateDungeon()
     {
+        NavMeshSurface navMeshSurface = GetComponentInChildren<NavMeshSurface>();
+        List<GameObject> rooms = new List<GameObject>();
+
+        for (int i = 0; i < size.x; i++)
+        {
+            for (int j = 0; j < size.y; j++)
+            {
+                Cell currentCell = board[Mathf.FloorToInt(i + j * size.x)];
+                if (currentCell.visited)
+                {
+                    GameObject newRoom = Instantiate(room, new Vector3(i * offset.x, 0, j * offset.y), Quaternion.identity, transform);
+                    var newRoomBehavior = newRoom.GetComponent<RoomBehavior>();
+                    rooms.Add(newRoom);
+                    newRoomBehavior.DeleteDoor();
+                }
+
+            }
+        }
+
+        navMeshSurface.BuildNavMesh();
+
+        foreach (GameObject room in rooms)
+        {
+            Destroy(room);
+        }
+
+
         for (int i = 0; i < size.x; i++)
         {
             for (int j = 0; j < size.y; j++)
@@ -46,12 +74,12 @@ public class DungeonGenerator : MonoBehaviour
                 {
                     var newRoom = Instantiate(room, new Vector3(i * offset.x, 0, j * offset.y), Quaternion.identity, transform).GetComponent<RoomBehavior>();
                     newRoom.UpdateRoom(board[(int)(i + j * size.x)].status, board[(int)(i + j * size.x)].putDoor);
-
                     newRoom.name += " " + i + "-" + j;
                 }
 
             }
         }
+       
     }
 
 
